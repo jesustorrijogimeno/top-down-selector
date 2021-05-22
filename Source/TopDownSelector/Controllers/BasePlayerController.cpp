@@ -7,18 +7,17 @@
 #include "EngineUtils.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/Character.h"
+#include "TopDownSelector/Pawns/Camera.h"
 
 void ABasePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	bShowMouseCursor		= true;
-	bEnableClickEvents		= true;
-	bEnableMouseOverEvents	= true;
-	RotatingCamera			= false;
+	SetMouseActive(true);
+	bRotatingCamera	= false;
 
-	BaseHUD			= CastChecked<ABaseHUD>(GetHUD());
-	CurrentGM		= CastChecked<AGameModeMain>(GetWorld()->GetAuthGameMode());
+	BaseHUD		= CastChecked<ABaseHUD>(GetHUD());
+	CurrentGM	= CastChecked<AGameModeMain>(GetWorld()->GetAuthGameMode());
 }
 
 
@@ -29,12 +28,10 @@ void ABasePlayerController::SetupInputComponent()
 	InputComponent->BindAction("LeftClick", IE_Pressed, this, &ABasePlayerController::LeftClickPressed);
 	InputComponent->BindAction("LeftClick", IE_Released, this, &ABasePlayerController::LeftClickReleased);
 	InputComponent->BindAction("RightClick", IE_Released, this, &ABasePlayerController::RightClickReleased);
-	/*InputComponent->BindAction("RightClick", IE_Released, this, &ABasePlayerController::RightClick);
 
 	//Camera Inputs
 	//-Hook Rotation camera
 	InputComponent->BindAction("CameraRotationControl", IE_Pressed, this, &ABasePlayerController::RotationControlOpen);
-	InputComponent->BindAction("CameraRotationControl", IE_Released, this, &ABasePlayerController::RotationControlClose);
 
 	//-Hook up events for "ZoomIn"
 	InputComponent->BindAction("ZoomIn", IE_Pressed, this, &ABasePlayerController::CameraZoomIn);
@@ -43,36 +40,40 @@ void ABasePlayerController::SetupInputComponent()
 	//-Hook up every-frame handling for our four axes
 	InputComponent->BindAxis("MoveForward", this, &ABasePlayerController::CameraMoveForward);
 	InputComponent->BindAxis("MoveRight", this, &ABasePlayerController::CameraMoveRight);
-	InputComponent->BindAxis("CameraYaw", this, &ABasePlayerController::CameraYawCamera);*/
-
+	InputComponent->BindAxis("CameraYaw", this, &ABasePlayerController::CameraYawCamera);
 }
 
 void ABasePlayerController::LeftClickPressed()
 {
-	BaseHUD->InitDrag(this);
-	CurrentGM->UnitsSelected.Empty();
+	this->BaseHUD->InitDrag(this);
+	this->CurrentGM->UnitsSelected.Empty();
 }
 
 void ABasePlayerController::LeftClickReleased()
 {
-	BaseHUD->StopDrag();
+	this->BaseHUD->StopDrag();
 	MultipleSelection();
 	SingleSelection();
-	BaseHUD->RestartScreenPositions();
+	this->BaseHUD->RestartScreenPositions();
 }
 
 void ABasePlayerController::RightClickReleased()
 {
-	if (!RotatingCamera && CurrentGM->UnitsSelected.Num() != 0) {
-		// Trace to see what is under the mouse cursor
-		FHitResult Hit;
-		GetHitResultUnderCursor(ECC_Visibility, false, Hit);
+	if (this->bRotatingCamera || this->CurrentGM->UnitsSelected.Num() == 0) 
+	{
+		RotationControlClose();
+		return;
+	}
+	// Trace to see what is under the mouse cursor
+	FHitResult Hit;
+	GetHitResultUnderCursor(ECC_Visibility, false, Hit);
 
-		if (Hit.bBlockingHit) {
-			// We hit something, move there
-			for (int32 i = 0; i < CurrentGM->UnitsSelected.Num(); i++) {
-				CurrentGM->UnitsSelected[i]->MoveCharacterTo(Hit.ImpactPoint);
-			}
+	if (Hit.bBlockingHit) 
+	{
+		// We hit something, move there
+		for (int32 i = 0; i < this->CurrentGM->UnitsSelected.Num(); i++)
+		{
+			this->CurrentGM->UnitsSelected[i]->MoveCharacterTo(Hit.ImpactPoint);
 		}
 	}
 }
@@ -89,17 +90,17 @@ void ABasePlayerController::MultipleSelection() const
 		FVector2D RadiusPoint;
 		ProjectWorldLocationToScreen(ActorLocation + FVector(RadiusCapsule, 0, 0), RadiusPoint);
 		const float Distance = PointDistance(ActorLocation2D.X, RadiusPoint.X, ActorLocation2D.Y, RadiusPoint.Y);
-		if (Is2DVectorInRectangle(ActorLocation2D, BaseHUD->StartScreenPos, BaseHUD->EndScreenPos, Distance)) 
+		if (Is2DVectorInRectangle(ActorLocation2D, this->BaseHUD->StartScreenPos, this->BaseHUD->EndScreenPos, Distance))
 		{
 			AIController->bSelected = true;
-			CurrentGM->UnitsSelected.Add(AIController);
+			this->CurrentGM->UnitsSelected.Add(AIController);
 		}
 	}
 }
 
 void ABasePlayerController::SingleSelection() const
 {
-	if (CurrentGM->UnitsSelected.Num() != 0) 
+	if (this->CurrentGM->UnitsSelected.Num() != 0)
 	{
 		return;
 	}
@@ -111,7 +112,7 @@ void ABasePlayerController::SingleSelection() const
 	}
 
 	CurrentController->bSelected = true;
-	CurrentGM->UnitsSelected.Add(CurrentController);
+	this->CurrentGM->UnitsSelected.Add(CurrentController);
 }
 
 ABaseAIController* ABasePlayerController::GetAIControllerSelected() const
@@ -131,12 +132,20 @@ ABaseAIController* ABasePlayerController::GetAIControllerSelected() const
 	return CurrentController;
 }
 
-double ABasePlayerController::PointDistance(float X1, float X2, float Y1, float Y2)
+double ABasePlayerController::PointDistance(
+	const float X1, 
+	const float X2, 
+	const float Y1, 
+	const float Y2)
 {
 	return sqrt(pow((X2 - X1), 2) + pow((Y2 - Y1), 2));
 }
 
-bool ABasePlayerController::Is2DVectorInRectangle(FVector2D Point, FVector2D RectangleStart, FVector2D RectangleEnd, float RadiusCapsule)
+bool ABasePlayerController::Is2DVectorInRectangle(
+	const FVector2D Point, 
+	const FVector2D RectangleStart, 
+	const FVector2D RectangleEnd, 
+	const float RadiusCapsule)
 {
 	FVector2D Min;
 	FVector2D Max;
@@ -198,43 +207,75 @@ bool ABasePlayerController::Is2DVectorInRectangle(FVector2D Point, FVector2D Rec
     return false;
 }
 
-bool ABasePlayerController::IsOutSideLeft(FVector2D Point, FVector2D VectorToCompare)
+bool ABasePlayerController::IsOutSideLeft(
+	const FVector2D Point, 
+	const FVector2D VectorToCompare)
 {
 	return Point.X < VectorToCompare.X;
 }
 
-bool ABasePlayerController::IsOutSideRight(FVector2D Point, FVector2D VectorToCompare)
+bool ABasePlayerController::IsOutSideRight(
+	const FVector2D Point, 
+	const FVector2D VectorToCompare)
 {
 	return Point.X > VectorToCompare.X;
 }
 
-bool ABasePlayerController::IsOutSideTop(FVector2D Point, FVector2D VectorToCompare)
+bool ABasePlayerController::IsOutSideTop(
+	const FVector2D Point, 
+	const FVector2D VectorToCompare)
 {
 	return Point.Y > VectorToCompare.Y;
 }
 
-bool ABasePlayerController::IsOutSideBottom(FVector2D Point, FVector2D VectorToCompare)
+bool ABasePlayerController::IsOutSideBottom(
+	const FVector2D Point, 
+	const FVector2D VectorToCompare)
 {
 	return Point.Y < VectorToCompare.Y;
 }
 
+void ABasePlayerController::SetMouseActive(bool bActivated)
+{
+	bShowMouseCursor		= bActivated;
+	bEnableClickEvents		= bActivated;
+	bEnableMouseOverEvents	= bActivated;
+}
+
 //Camera Inputs
-void ABasePlayerController::CameraMoveForward(float AxisValue) {
-	//CastChecked<ACameraC>(GetPawn())->MoveForward(AxisValue);
+void ABasePlayerController::CameraMoveForward(float AxisValue)
+{
+	CastChecked<ACamera>(GetPawn())->MoveForward(AxisValue);
 }
 
-void ABasePlayerController::CameraMoveRight(float AxisValue) {
-	//CastChecked<ACameraC>(GetPawn())->MoveRight(AxisValue);
+void ABasePlayerController::CameraMoveRight(float AxisValue)
+{
+	CastChecked<ACamera>(GetPawn())->MoveRight(AxisValue);
 }
 
-void ABasePlayerController::CameraYawCamera(float AxisValue) {
-	//CastChecked<ACameraC>(GetPawn())->YawCamera(AxisValue);
+void ABasePlayerController::CameraYawCamera(const float AxisValue)
+{
+	CastChecked<ACamera>(GetPawn())->YawCamera(AxisValue);
 }
 
-void ABasePlayerController::CameraZoomIn() {
-	//CastChecked<ACameraC>(GetPawn())->ZoomIn();
+void ABasePlayerController::CameraZoomIn()
+{
+	CastChecked<ACamera>(GetPawn())->ZoomIn();
 }
 
-void ABasePlayerController::CameraZoomOut() {
-	//CastChecked<ACameraC>(GetPawn())->ZoomOut();
+void ABasePlayerController::CameraZoomOut()
+{
+	CastChecked<ACamera>(GetPawn())->ZoomOut();
+}
+
+void ABasePlayerController::RotationControlClose()
+{
+	this->bRotatingCamera = false;
+	CastChecked<ACamera>(GetPawn())->StopRotation();
+}
+
+void ABasePlayerController::RotationControlOpen()
+{
+	this->bRotatingCamera = true;
+	CastChecked<ACamera>(GetPawn())->StartRotation();
 }

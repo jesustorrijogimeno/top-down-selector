@@ -24,18 +24,19 @@ private:
 	ABaseHUD* BaseHUD;
 	UPROPERTY()
 	AGameModeMain* CurrentGM;
-	bool RotatingCamera;
+
+	bool bRotatingCamera;
 	void LeftClickPressed();
 	void LeftClickReleased();
 	void RightClickReleased();
-	/*void RightClick();
-	void RotationControlOpen();//Camera rotation
-	void RotationControlClose();//Camera rotation*/
 
 	//Camera Inputs
 	void CameraMoveForward(float AxisValue);
 	void CameraMoveRight(float AxisValue);
 	void CameraYawCamera(float AxisValue);
+
+	void RotationControlOpen();
+	void RotationControlClose();
 
 	void CameraZoomIn();
 	void CameraZoomOut();
@@ -50,16 +51,7 @@ private:
 	static bool IsOutSideTop(FVector2D Point, FVector2D VectorToCompare);
 	static bool IsOutSideBottom(FVector2D Point, FVector2D VectorToCompare);
 public:
-	/*TArray<ABaseAIController*> SelectedControllers;
-	FVector StartHitPos = FVector(0.0f, 0.0f, 0.0f);
-
-	void UnSelect();
-	virtual bool InputKey(FKey Key, EInputEvent EventType, float AmountDepressed, bool bGamepad) override;
-	bool Is2DVectorInRectangle(FVector2D Point, FVector2D RectangleStart, FVector2D RectangleEnd, float radiusCapsule);
-	double PointDistance(float X1, float V1, float X2, float V2);
-	ABaseAIController* SimpleSelection();*/
 	virtual void SetupInputComponent() override;
 	virtual void BeginPlay() override;
-	/*UPROPERTY()
-	TArray<ABaseAIController*> UnitsSelected;*/
+	void SetMouseActive(bool bActivated);
 };

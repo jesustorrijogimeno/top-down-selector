@@ -26,15 +26,9 @@ public:
 	virtual void DrawHUD() override;
 	void InitDrag(APlayerController* CurrentPC);
 	void StopDrag();
-	void GetActorsInDrag();
 	FVector2D StartScreenPos;
 	FVector2D EndScreenPos;
 	void RestartScreenPositions();
 private:
 	void DrawSelector();
-	
-	//void SingleSelection(AGameModeMain* CurrentGM) const;
-	
-	
-	ABaseAIController* GetAIControllerSelected() const;
 };

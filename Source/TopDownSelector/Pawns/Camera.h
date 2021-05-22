@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "TopDownSelector/Controllers/BasePlayerController.h"
 
 #include "Camera.generated.h"
 
@@ -39,10 +40,21 @@ public:
 	float MovementSpeed;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CameraProperties")
 	float RotationSpeed;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CameraProperties")
+	float ScreenPercent;
 	UPROPERTY()
 	USpringArmComponent* CameraSpringArm;
 	UPROPERTY()
 	UCameraComponent* Camera;
+	bool bRotationGateOpened;
+
+	void StartRotation();
+	void StopRotation();
+	void ZoomIn();
+	void ZoomOut();
+	void YawCamera(float AxisValue);
+	void MoveForward(float AxisValue);
+	void MoveRight(float AxisValue);
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -53,5 +65,19 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+private:
+	UPROPERTY()
+	ABasePlayerController* CurrentPC;
+	UPROPERTY()
+	ABaseHUD* CurrentHUD;
+	FVector2D MousePosition;
+	FVector2D MovementInput;
+	float RotationInput;
+	float CurrentZoom;
 
+	void ManageRotation(float DeltaTime);
+	void ManageZoom(float DeltaTime);
+	void ManageMovement(float DeltaTime);
+	void MovementWithKeyboard(float DeltaTime);
+	void MovementWithMouse(float DeltaTime);
 };
