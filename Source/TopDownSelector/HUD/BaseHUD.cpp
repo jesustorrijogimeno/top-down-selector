@@ -25,7 +25,7 @@ void ABaseHUD::DrawSelector()
 	const float Height	= EndPosProjection.Y - StartScreenPos.Y;
 	DrawRect(SelectorColor, StartScreenPos.X, StartScreenPos.Y, Width, Height);
 	EndScreenPos = FVector2D(EndPosProjection.X, EndPosProjection.Y);
-
+	//GetActorsInDrag();
 	//ManageSelection();
 }
 
@@ -38,12 +38,22 @@ void ABaseHUD::DrawSelector()
 	RestartScreenPositions();
 }*/
 
-TArray<ABaseAIController*> ABaseHUD::GetActorsInDrag()
+/*void ABaseHUD::GetActorsInDrag()
 {
+	UnitsSelected.Empty();
 	TArray<ABaseAIController*> UnitSelected;
-	GetActorsInSelectionRectangle(StartScreenPos, EndScreenPos, UnitSelected);
-	return UnitSelected;
-}
+	TArray<AActor*> Actors;
+	GetActorsInSelectionRectangle(StartScreenPos, EndScreenPos, Actors);
+    for (auto Actor : Actors)
+    {
+		AController* Current = Actor->GetInstigatorController();
+		ABaseAIController* AIController = Cast<ABaseAIController>(Current);
+		if (AIController != nullptr)
+		{
+			UnitsSelected.Add(AIController);
+		}
+    }
+}*/
 
 /*void ABaseHUD::SingleSelection(AGameModeMain* CurrentGM) const
 {

@@ -27,6 +27,7 @@ private:
 	bool RotatingCamera;
 	void LeftClickPressed();
 	void LeftClickReleased();
+	void RightClickReleased();
 	/*void RightClick();
 	void RotationControlOpen();//Camera rotation
 	void RotationControlClose();//Camera rotation*/
@@ -38,11 +39,16 @@ private:
 
 	void CameraZoomIn();
 	void CameraZoomOut();
-	void MultipleSelection();
+	void MultipleSelection() const;
 	void SingleSelection() const;
 
 	ABaseAIController* GetAIControllerSelected() const;
-
+	static double PointDistance(float X1, float X2, float Y1, float Y2);
+	static bool Is2DVectorInRectangle(FVector2D Point, FVector2D RectangleStart, FVector2D RectangleEnd, float RadiusCapsule);
+	static bool IsOutSideRight(FVector2D Point, FVector2D VectorToCompare);
+	static bool IsOutSideLeft(FVector2D Point, FVector2D VectorToCompare);
+	static bool IsOutSideTop(FVector2D Point, FVector2D VectorToCompare);
+	static bool IsOutSideBottom(FVector2D Point, FVector2D VectorToCompare);
 public:
 	/*TArray<ABaseAIController*> SelectedControllers;
 	FVector StartHitPos = FVector(0.0f, 0.0f, 0.0f);

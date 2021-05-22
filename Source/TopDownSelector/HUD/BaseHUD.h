@@ -21,11 +21,12 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="Selector Config")
 	FLinearColor SelectorColor;
-	
+	UPROPERTY(EditAnywhere, Category = "Selector Config")
+	TArray<ABaseAIController*> UnitsSelected;
 	virtual void DrawHUD() override;
 	void InitDrag(APlayerController* CurrentPC);
 	void StopDrag();
-	TArray<ABaseAIController*> GetActorsInDrag();
+	void GetActorsInDrag();
 	FVector2D StartScreenPos;
 	FVector2D EndScreenPos;
 	void RestartScreenPositions();
