@@ -235,7 +235,7 @@ bool ABasePlayerController::IsOutSideBottom(
 	return Point.Y < VectorToCompare.Y;
 }
 
-void ABasePlayerController::SetMouseActive(bool bActivated)
+void ABasePlayerController::SetMouseActive(const bool bActivated)
 {
 	bShowMouseCursor		= bActivated;
 	bEnableClickEvents		= bActivated;
@@ -243,12 +243,12 @@ void ABasePlayerController::SetMouseActive(bool bActivated)
 }
 
 //Camera Inputs
-void ABasePlayerController::CameraMoveForward(float AxisValue)
+void ABasePlayerController::CameraMoveForward(const float AxisValue)
 {
 	CastChecked<ACamera>(GetPawn())->MoveForward(AxisValue);
 }
 
-void ABasePlayerController::CameraMoveRight(float AxisValue)
+void ABasePlayerController::CameraMoveRight(const float AxisValue)
 {
 	CastChecked<ACamera>(GetPawn())->MoveRight(AxisValue);
 }

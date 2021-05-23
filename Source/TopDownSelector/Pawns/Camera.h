@@ -19,7 +19,7 @@ class TOPDOWNSELECTOR_API ACamera : public APawn
 public:
 	// Sets default values for this pawn's properties
 	ACamera();
-	//Variables
+	//Parameters
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CameraProperties")
 	float InitAngle;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CameraProperties")

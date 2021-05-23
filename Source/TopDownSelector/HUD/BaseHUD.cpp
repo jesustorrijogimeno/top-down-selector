@@ -12,34 +12,34 @@ void ABaseHUD::DrawHUD()
 
 void ABaseHUD::DrawSelector()
 {
-	if (!bDraging)
+	if (!this->bDraging)
 	{
 		return;
 	}
 
-	EndScreenPos = StartScreenPos;
+	this->EndScreenPos = this->StartScreenPos;
 	FHitResult HitResult;
 	GetWorld()->GetFirstPlayerController()->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Visibility), true, HitResult);
 	const FVector EndPosProjection = Project(HitResult.Location);
-	const float Width	= EndPosProjection.X - StartScreenPos.X;
-	const float Height	= EndPosProjection.Y - StartScreenPos.Y;
-	DrawRect(SelectorColor, StartScreenPos.X, StartScreenPos.Y, Width, Height);
-	EndScreenPos = FVector2D(EndPosProjection.X, EndPosProjection.Y);
+	const float Width	= EndPosProjection.X - this->StartScreenPos.X;
+	const float Height	= EndPosProjection.Y - this->StartScreenPos.Y;
+	DrawRect(this->SelectorColor, this->StartScreenPos.X, this->StartScreenPos.Y, Width, Height);
+	this->EndScreenPos = FVector2D(EndPosProjection.X, EndPosProjection.Y);
 }
 
 void ABaseHUD::InitDrag(APlayerController* CurrentPC)
 {
-	CurrentPC->GetMousePosition(StartScreenPos.X, StartScreenPos.Y);
-	bDraging = true;
+	CurrentPC->GetMousePosition(this->StartScreenPos.X, this->StartScreenPos.Y);
+	this->bDraging = true;
 }
 
 void ABaseHUD::StopDrag()
 {
-	bDraging = false;
+	this->bDraging = false;
 }
 
 void ABaseHUD::RestartScreenPositions()
 {
-	StartScreenPos	= FVector2D::ZeroVector;
-	EndScreenPos	= FVector2D::ZeroVector;
+	this->StartScreenPos	= FVector2D::ZeroVector;
+	this->EndScreenPos		= FVector2D::ZeroVector;
 }
