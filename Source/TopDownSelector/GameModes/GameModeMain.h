@@ -18,4 +18,6 @@ class TOPDOWNSELECTOR_API AGameModeMain : public AGameModeBase
 public:
 	UPROPERTY(EditAnywhere, Category = "Units Selected")
 	TArray<ABaseAIController*> UnitsSelected;
+
+	void UnSelectAllUnits();
 };

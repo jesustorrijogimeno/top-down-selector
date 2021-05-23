@@ -16,7 +16,4 @@ class TOPDOWNSELECTOR_API ABaseAIController : public AAIController
 
 public:
 	void MoveCharacterTo(const FVector Coordinates);
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = OwnVariables)
-	bool bSelected = false;
 };

@@ -7,6 +7,7 @@
 #include "EngineUtils.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/Character.h"
+#include "TopDownSelector/Pawns/AICharacter.h"
 #include "TopDownSelector/Pawns/Camera.h"
 
 void ABasePlayerController::BeginPlay()
@@ -46,7 +47,7 @@ void ABasePlayerController::SetupInputComponent()
 void ABasePlayerController::LeftClickPressed()
 {
 	this->BaseHUD->InitDrag(this);
-	this->CurrentGM->UnitsSelected.Empty();
+	this->CurrentGM->UnSelectAllUnits();
 }
 
 void ABasePlayerController::LeftClickReleased()
@@ -92,7 +93,7 @@ void ABasePlayerController::MultipleSelection() const
 		const float Distance = PointDistance(ActorLocation2D.X, RadiusPoint.X, ActorLocation2D.Y, RadiusPoint.Y);
 		if (Is2DVectorInRectangle(ActorLocation2D, this->BaseHUD->StartScreenPos, this->BaseHUD->EndScreenPos, Distance))
 		{
-			AIController->bSelected = true;
+			CastChecked<AAICharacter>(AIController->GetPawn())->OnSelected();
 			this->CurrentGM->UnitsSelected.Add(AIController);
 		}
 	}
@@ -110,8 +111,7 @@ void ABasePlayerController::SingleSelection() const
 	{
 		return;
 	}
-
-	CurrentController->bSelected = true;
+	CastChecked<AAICharacter>(CurrentController->GetPawn())->OnSelected();
 	this->CurrentGM->UnitsSelected.Add(CurrentController);
 }
 
